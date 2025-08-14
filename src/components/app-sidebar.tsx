@@ -25,7 +25,7 @@ export function AppSidebar({ activeTab, onTabChange }: AppSidebarProps) {
             size="sm"
             onClick={() => onTabChange(item.id)}
             className={`w-full h-16 flex flex-col items-center justify-center gap-1 rounded-none hover:bg-gray-100 ${
-              activeTab === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-gray-600'
+              activeTab === item.id ? 'bg-blue-50 text-green-600 border-r-2 border-green-600' : 'text-gray-600'
             }`}
           >
             <item.icon className="size-5" />

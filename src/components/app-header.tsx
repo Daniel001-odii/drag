@@ -467,17 +467,9 @@ export function AppHeader({
       <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
         {/* Left Section - File Operations */}
         <div className="flex items-center gap-2">
-        <span 
-          className="font-bold text-2xl px-5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
-          style={{
-            background: 'linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}
-        >
-          Drag!
-        </span>
+        <div className=" p-3">
+          <img src="drag.png" className=" h-[25px]"/>
+        </div>
           {/* Undo/Redo */}
           <Tooltip>
             <TooltipTrigger asChild>

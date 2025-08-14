@@ -470,7 +470,7 @@ export const CanvasArea = forwardRef<CanvasAreaHandle, CanvasAreaProps>(({
   }), [addTextFunction])
 
   return (
-    <div className="flex-1 flex flex-col gap-3 items-start p-5 justify-start relative overflow-auto">
+    <div className="flex-1 flex flex-col gap-3 items-start p-5 justify-start relative overflow-auto bg-green-500/5">
 
       {/* Main Canvas */}
       <div
