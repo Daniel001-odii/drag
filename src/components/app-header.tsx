@@ -349,7 +349,7 @@ export function AppHeader({
       
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      const filename = `fizzle-export-${timestamp}.png`
+      const filename = `drag-design-${timestamp}.png`
       
       await downloadCanvasAsPNG(canvasRef, filename, {
         format: 'png',
@@ -379,7 +379,7 @@ export function AppHeader({
       
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      const filename = `fizzle-export-${timestamp}.jpg`
+      const filename = `drag-design-${timestamp}.jpg`
       
       await downloadCanvasAsPNG(canvasRef, filename, {
         format: 'jpeg',
@@ -409,7 +409,7 @@ export function AppHeader({
       
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      const filename = `fizzle-project-${timestamp}.json`
+      const filename = `drag-design-${timestamp}.json`
       
       await downloadCanvasAsJSON(canvasRef, filename, {
         includeBackground: type === 'full',

@@ -524,7 +524,7 @@ export const downloadPureFabricJSON = async (
  */
 export const downloadCanvasAsJSON = async (
   canvas: fabric.Canvas,
-  filename: string = 'fizzle-project.json',
+  filename: string = 'drag-project.json',
   options: {
     includeBackground?: boolean
     includeBackgroundImage?: boolean
