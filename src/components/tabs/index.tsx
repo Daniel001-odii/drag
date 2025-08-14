@@ -1,0 +1,6 @@
+export { DesignTab } from './design-tab'
+export { ElementsTab } from './elements-tab'
+export { TextTab } from './text-tab'
+export { UploadsTab } from './uploads-tab'
+export { ToolsTab } from './tools-tab'
+export { ProjectsTab } from './projects-tab' 
