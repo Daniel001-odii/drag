@@ -30,7 +30,7 @@ import * as fabric from 'fabric'
 // ========================================
 
 export interface AnchorStyles {
-  cornerStyle: 'circle' | 'rect' | 'cross' | 'diamond'
+  cornerStyle: 'circle' | 'rect'
   cornerSize: number
   cornerColor: string
   cornerStrokeColor: string

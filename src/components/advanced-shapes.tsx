@@ -1,4 +1,4 @@
-import React from 'react'
+
 import type { CanvasElement } from '../lib/types'
 
 interface AdvancedShape {

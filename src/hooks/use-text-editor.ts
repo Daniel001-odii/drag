@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react'
-import { fabric } from 'fabric'
+import * as fabric from 'fabric'
 
 interface TextEditorOptions {
   onTextChange: (newText: string) => void

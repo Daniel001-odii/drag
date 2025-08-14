@@ -85,14 +85,15 @@ export const CanvasArea = forwardRef<CanvasAreaHandle, CanvasAreaProps>(({
       // Set up canvas event listeners
       const cleanup = setupCanvasEventListeners(canvas, {
         onMouseDown: (e) => {
-          if (e.target) {
+          const event = e as { target?: fabric.Object; e: MouseEvent | TouchEvent }
+          if (event.target) {
             console.log("mouse down event fired")
-            const clickedObject = e.target
+            const clickedObject = event.target
             setSelectedObject(clickedObject)
             setIsLockedState(isObjectLocked(clickedObject))
             onObjectSelect?.(clickedObject)
             // Store cursor position for menu positioning
-            const pointer = canvas.getPointer(e.e)
+            const pointer = canvas.getPointer(event.e)
             setMenuPosition(updateMenuPosition(clickedObject, { x: pointer.x, y: pointer.y }))
             setShowFloatingMenu(false)
           } else {
@@ -104,26 +105,29 @@ export const CanvasArea = forwardRef<CanvasAreaHandle, CanvasAreaProps>(({
           }
         },
         onMouseUp: (e) => {
-          if (e.target) {
-            console.log("mouse up event fired, object: ", e.target)
-            setIsLockedState(isObjectLocked(e.target))
-            const pointer = canvas.getPointer(e.e)
-            setMenuPosition(updateMenuPosition(e.target, { x: pointer.x, y: pointer.y }))
+          const event = e as { target?: fabric.Object; e: MouseEvent | TouchEvent }
+          if (event.target) {
+            console.log("mouse up event fired, object: ", event.target)
+            setIsLockedState(isObjectLocked(event.target))
+            const pointer = canvas.getPointer(event.e)
+            setMenuPosition(updateMenuPosition(event.target, { x: pointer.x, y: pointer.y }))
             setShowFloatingMenu(true)
           }
         },
 
         onObjectMoving: (e) => {
-          if (e.target && selectedObject === e.target) {
+          const event = e as { target?: fabric.Object }
+          if (event.target && selectedObject === event.target) {
             setShowFloatingMenu(false)
             // Don't update position during movement to avoid flickering
           }
         },
 
         onObjectModified: (e) => {
-          if (e.target && selectedObject === e.target) {
+          const event = e as { target?: fabric.Object }
+          if (event.target && selectedObject === event.target) {
             // For object modification, we'll use the object's position since cursor might not be available
-            setMenuPosition(updateMenuPosition(e.target, undefined))
+            setMenuPosition(updateMenuPosition(event.target, undefined))
             setShowFloatingMenu(true)
           }
         },

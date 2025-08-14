@@ -11,7 +11,7 @@ export interface CanvasConfig {
   cornerColor?: string
   cornerStrokeColor?: string
   cornerSize?: number
-  cornerStyle?: 'circle' | 'rect' | 'cross' | 'diamond'
+  cornerStyle?: 'circle' | 'rect'
   cornerDashArray?: number[]
   hasRotatingPoint?: boolean
   rotatingPointOffset?: number
@@ -70,10 +70,10 @@ export const createCanvas = (canvasElement: HTMLCanvasElement, config: CanvasCon
 }
 
 export interface CanvasEventHandlers {
-  onMouseDown?: (e: fabric.IEvent) => void
-  onMouseUp?: (e: fabric.IEvent) => void
-  onObjectMoving?: (e: fabric.IEvent) => void
-  onObjectModified?: (e: fabric.IEvent) => void
+  onMouseDown?: (e: unknown) => void
+  onMouseUp?: (e: unknown) => void
+  onObjectMoving?: (e: unknown) => void
+  onObjectModified?: (e: unknown) => void
   onSelectionCleared?: () => void
   onKeyDown?: (e: KeyboardEvent) => void
 }
@@ -402,17 +402,10 @@ export const exportCanvasAsJSON = async (
       const {
         includeBackground = true,
         includeBackgroundImage = true,
-        includeCustomProperties = true
       } = options
 
       // Get canvas JSON with specified options
-      const canvasJSON = canvas.toJSON([
-        'id',
-        'name',
-        'locked',
-        'customProperty',
-        ...(includeCustomProperties ? ['selectable', 'evented', 'visible'] : [])
-      ])
+      const canvasJSON = canvas.toJSON()
 
       // Create a complete project object
       const projectData = {
@@ -460,17 +453,10 @@ export const exportPureFabricJSON = async (
       const {
         includeBackground = true,
         includeBackgroundImage = true,
-        includeCustomProperties = true
       } = options
 
       // Get pure Fabric.js JSON
-      const fabricJSON = canvas.toJSON([
-        'id',
-        'name',
-        'locked',
-        'customProperty',
-        ...(includeCustomProperties ? ['selectable', 'evented', 'visible'] : [])
-      ])
+      const fabricJSON = canvas.toJSON()
 
       // Add canvas dimensions and background if requested
       if (includeBackground) {
@@ -589,7 +575,6 @@ export const importCanvasFromJSON = async (
     try {
       const {
         clearCanvas = true,
-        preserveAspectRatio = true,
         onCanvasSizeChange
       } = options
 
