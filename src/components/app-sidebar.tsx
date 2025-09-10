@@ -1,7 +1,8 @@
 import { Button } from "./ui/button"
-import { Type, Upload, Wrench, FolderOpen, LucideTable2, LucideShapes } from 'lucide-react'
+import { Type, Upload, Wrench, FolderOpen, LucideTable2, LucideShapes, LucideSparkles } from 'lucide-react'
 
 const sidebarItems = [
+  { id: 'generate', icon: LucideSparkles, label: "Generate" },
   { id: 'design', icon: LucideTable2, label: "Design" },
   { id: 'elements', icon: LucideShapes, label: "Elements" },
   { id: 'text', icon: Type, label: "Text" },

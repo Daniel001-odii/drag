@@ -4,6 +4,7 @@ import { Search, X, Wand2, Sparkles, Palette, Play, FileJson, Download } from 'l
 import * as fabric from 'fabric'
 import { downloadPureFabricJSON, importCanvasFromJSON } from '../../lib/fabric-canvas-utils'
 import { toast } from 'sonner'
+import { useTabState } from '../../hooks/useTabState'
 
 interface ToolsTabProps {
   onClosePanel: () => void
@@ -12,6 +13,8 @@ interface ToolsTabProps {
 }
 
 export function ToolsTab({ onClosePanel, canvasRef, onCanvasSizeChange }: ToolsTabProps) {
+  const { tabStates, updateTabState } = useTabState();
+  const { searchValue, selectedTool } = tabStates.tools;
   // Handle JSON export
   const handleExportJSON = async () => {
     if (!canvasRef) {
@@ -117,6 +120,8 @@ export function ToolsTab({ onClosePanel, canvasRef, onCanvasSizeChange }: ToolsT
           <Input
             placeholder="Search tools..."
             className="w-full pl-10"
+            value={searchValue}
+            onChange={(e) => updateTabState('tools', { searchValue: e.target.value })}
           />
         </div>
       </div>

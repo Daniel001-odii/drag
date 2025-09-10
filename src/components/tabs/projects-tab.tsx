@@ -1,12 +1,15 @@
 import { Input } from "../ui/input"
 import { ScrollArea } from "../ui/scroll-area"
 import { Search, X } from 'lucide-react'
+import { useTabState } from '../../hooks/useTabState'
 
 interface ProjectsTabProps {
   onClosePanel: () => void
 }
 
 export function ProjectsTab({ onClosePanel }: ProjectsTabProps) {
+  const { tabStates, updateTabState } = useTabState();
+  const { searchValue, selectedProject } = tabStates.projects;
   const projects = [
     { name: "Social Media Campaign", preview: "/placeholder.svg?height=120&width=120", modified: "2 hours ago" },
     { name: "Business Presentation", preview: "/placeholder.svg?height=120&width=120", modified: "1 day ago" },
@@ -31,6 +34,8 @@ export function ProjectsTab({ onClosePanel }: ProjectsTabProps) {
           <Input
             placeholder="Search projects..."
             className="w-full pl-10"
+            value={searchValue}
+            onChange={(e) => updateTabState('projects', { searchValue: e.target.value })}
           />
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { ScrollArea } from "../ui/scroll-area"
 import { LucideType, Search, X } from 'lucide-react'
+import { useTabState } from '../../hooks/useTabState'
 
 interface TextTabProps {
   onClosePanel: () => void
@@ -16,6 +17,8 @@ declare global {
 }
 
 export function TextTab({ onClosePanel, onAddText }: TextTabProps) {
+  const { tabStates, updateTabState } = useTabState();
+  const { searchValue } = tabStates.text;
   const headings = [
     { name: "Add a heading", style: "text-3xl font-extrabold", sample: "Heading", type: "heading" as const },
     { name: "Add a subheading", style: "text-xl font-bold", sample: "Subheading", type: "subheading" as const },
@@ -50,6 +53,8 @@ export function TextTab({ onClosePanel, onAddText }: TextTabProps) {
           <Input
             placeholder="Search text..."
             className="w-full pl-10"
+            value={searchValue}
+            onChange={(e) => updateTabState('text', { searchValue: e.target.value })}
           />
         </div>
       </div>

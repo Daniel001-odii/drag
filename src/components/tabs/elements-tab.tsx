@@ -2,6 +2,7 @@ import { Input } from "../ui/input"
 import { ScrollArea } from "../ui/scroll-area"
 import { Search, X, Circle, Square, Triangle, Star, RectangleHorizontal } from 'lucide-react'
 import type { ShapeType, ShapeProperties } from '../../lib/fabric-shape-utils'
+import { useTabState } from '../../hooks/useTabState'
 
 interface ElementsTabProps {
   onClosePanel: () => void
@@ -12,6 +13,8 @@ interface WindowWithCanvas extends Window {
 }
 
 export function ElementsTab({ onClosePanel }: ElementsTabProps) {
+  const { tabStates, updateTabState } = useTabState();
+  const { searchValue } = tabStates.elements;
   const shapes = [
     { name: "Circle", icon: Circle, color: "#3B82F6", type: "circle" },
     { name: "Square", icon: Square, color: "#EF4444", type: "rect" },
@@ -57,6 +60,8 @@ export function ElementsTab({ onClosePanel }: ElementsTabProps) {
           <Input
             placeholder="Search elements..."
             className="w-full pl-10"
+            value={searchValue}
+            onChange={(e) => updateTabState('elements', { searchValue: e.target.value })}
           />
         </div>
       </div>

@@ -10,10 +10,11 @@ import { CanvasArea } from "../components/canvas-area"
 import type { CanvasAreaHandle } from "../components/canvas-area"
 import { Toaster } from "../components/ui/sonner"
 import { AiButton } from "../components/ai-button"
+import { TabStateProvider } from "../contexts/TabStateContext.tsx"
 
 
 export default function CanvaClone() {
-  const [activeTab, setActiveTab] = useState('design')
+  const [activeTab, setActiveTab] = useState('generate')
   const [showDetailsPanel, setShowDetailsPanel] = useState(true)
   const [zoomLevel, setZoomLevel] = useState(100)
   const [selectedObject, setSelectedObject] = useState<fabric.Object | null>(null)
@@ -282,64 +283,66 @@ export default function CanvaClone() {
   }, [])
 
   return (
-    <div className="h-screen w-full flex flex-col bg-gray-50 overflow-hidden">
-      {/* Top Toolbar */}
-      <AppHeader 
-        selectedObject={selectedObject}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        onObjectAction={handleObjectAction}
-        canvasRef={canvasInstance ?? undefined}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <AppSidebar 
-          activeTab={activeTab} 
-          onTabChange={handleTabChange} 
+    <TabStateProvider>
+      <div className="h-screen w-full flex flex-col bg-gray-50 overflow-hidden">
+        {/* Top Toolbar */}
+        <AppHeader 
+          selectedObject={selectedObject}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onObjectAction={handleObjectAction}
+          canvasRef={canvasInstance ?? undefined}
         />
 
-        {/* Sidebar Content Panel */}
-        <SidebarContentPanel 
-          activeTab={activeTab}
-          showDetailsPanel={showDetailsPanel}
-          onClosePanel={handleClosePanel}
-          canvasRef={canvasInstance}
-          canvasSize={canvasSize}
-          onCanvasSizeChange={handleCanvasSizeChange}
-          onAddText={(style?: 'heading' | 'subheading' | 'body') => {
-            canvasAreaHandleRef.current?.addTextToCanvas?.(style)
-          }}
-        />
+        {/* Main Content Area */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar */}
+          <AppSidebar 
+            activeTab={activeTab} 
+            onTabChange={handleTabChange} 
+          />
 
-        {/* Main Canvas Area */}
-        <CanvasArea 
+          {/* Sidebar Content Panel */}
+          <SidebarContentPanel 
+            activeTab={activeTab}
+            showDetailsPanel={showDetailsPanel}
+            onClosePanel={handleClosePanel}
+            canvasRef={canvasInstance}
+            canvasSize={canvasSize}
+            onCanvasSizeChange={handleCanvasSizeChange}
+            onAddText={(style?: 'heading' | 'subheading' | 'body') => {
+              canvasAreaHandleRef.current?.addTextToCanvas?.(style)
+            }}
+          />
+
+          {/* Main Canvas Area */}
+          <CanvasArea 
+            zoomLevel={zoomLevel}
+            canvasSize={canvasSize}
+            onObjectSelect={handleObjectSelect}
+            onObjectDeselect={handleObjectDeselect}
+            onCanvasRef={handleCanvasRef}
+            ref={canvasAreaHandleRef}
+          />
+        </div>
+
+        {/* Bottom Bar */}
+        <AppStatusBar 
           zoomLevel={zoomLevel}
-          canvasSize={canvasSize}
-          onObjectSelect={handleObjectSelect}
-          onObjectDeselect={handleObjectDeselect}
-          onCanvasRef={handleCanvasRef}
-          ref={canvasAreaHandleRef}
+          onZoomChange={handleZoomChange}
         />
-      </div>
 
-      {/* Bottom Bar */}
-      <AppStatusBar 
-        zoomLevel={zoomLevel}
-        onZoomChange={handleZoomChange}
-      />
-
-      {/* AI GENERATE BUTTON */}
-      <div className=" absolute bottom-14 right-10">
-        <AiButton canvasRef={canvasInstance ?? undefined}/>
+        {/* AI GENERATE BUTTON */}
+        <div className=" absolute bottom-14 right-10">
+          <AiButton canvasRef={canvasInstance ?? undefined}/>
+        </div>
+        
+        
+        {/* Toast Notifications */}
+        <Toaster />
       </div>
-      
-      
-      {/* Toast Notifications */}
-      <Toaster />
-    </div>
+    </TabStateProvider>
   )
 }

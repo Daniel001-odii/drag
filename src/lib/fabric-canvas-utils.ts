@@ -157,6 +157,9 @@ export const exportCanvasAsPNG = async (
 
       // Try to export directly first
       try {
+        // Ensure all objects are rendered before export
+        canvas.renderAll()
+        
         const dataURL = canvas.toDataURL({
           format,
           quality,
@@ -198,97 +201,221 @@ export const exportCanvasAsPNG = async (
         // Set the background color
         cleanCanvas.backgroundColor = canvas.backgroundColor || '#ffffff'
         
-        // Get all objects and recreate non-image ones
+        // Get all objects and recreate them
         const objects = canvas.getObjects()
         
+        // Process objects in order to maintain layering
         objects.forEach(obj => {
-          if (obj.type !== 'image') {
-            try {
-              // Create new objects based on their type instead of cloning
-              let newObj: fabric.Object | null = null
-              
-              if (obj.type === 'text') {
-                const textObj = obj as fabric.Text
-                newObj = new fabric.Text(textObj.text || '', {
-                  left: textObj.left,
-                  top: textObj.top,
-                  fontSize: textObj.fontSize,
-                  fontFamily: textObj.fontFamily,
-                  fill: textObj.fill,
-                  angle: textObj.angle,
-                  scaleX: textObj.scaleX,
-                  scaleY: textObj.scaleY,
-                  fontWeight: textObj.fontWeight,
-                  fontStyle: textObj.fontStyle,
-                  textAlign: textObj.textAlign,
-                  underline: textObj.underline,
-                  linethrough: textObj.linethrough,
-                  overline: textObj.overline
-                })
-              } else if (obj.type === 'rect') {
-                const rectObj = obj as fabric.Rect
+          try {
+            // Create new objects based on their type instead of cloning
+            let newObj: fabric.Object | null = null
+            
+            if (obj.type === 'text' || obj.type === 'i-text' || obj.type === 'textbox') {
+              const textObj = obj as fabric.Textbox
+              newObj = new fabric.Textbox(textObj.text || '', {
+                left: textObj.left,
+                top: textObj.top,
+                fontSize: textObj.fontSize,
+                fontFamily: textObj.fontFamily,
+                fill: textObj.fill,
+                angle: textObj.angle,
+                scaleX: textObj.scaleX,
+                scaleY: textObj.scaleY,
+                fontWeight: textObj.fontWeight,
+                fontStyle: textObj.fontStyle,
+                textAlign: textObj.textAlign,
+                underline: textObj.underline,
+                linethrough: textObj.linethrough,
+                overline: textObj.overline,
+                width: textObj.width,
+                height: textObj.height,
+                charSpacing: textObj.charSpacing,
+                lineHeight: textObj.lineHeight
+              })
+            } else if (obj.type === 'rect') {
+              const rectObj = obj as fabric.Rect
+              newObj = new fabric.Rect({
+                left: rectObj.left,
+                top: rectObj.top,
+                width: rectObj.width,
+                height: rectObj.height,
+                fill: rectObj.fill,
+                stroke: rectObj.stroke,
+                strokeWidth: rectObj.strokeWidth,
+                angle: rectObj.angle,
+                scaleX: rectObj.scaleX,
+                scaleY: rectObj.scaleY,
+                opacity: rectObj.opacity
+              })
+            } else if (obj.type === 'circle') {
+              const circleObj = obj as fabric.Circle
+              newObj = new fabric.Circle({
+                left: circleObj.left,
+                top: circleObj.top,
+                radius: circleObj.radius,
+                fill: circleObj.fill,
+                stroke: circleObj.stroke,
+                strokeWidth: circleObj.strokeWidth,
+                angle: circleObj.angle,
+                scaleX: circleObj.scaleX,
+                scaleY: circleObj.scaleY,
+                opacity: circleObj.opacity
+              })
+            } else if (obj.type === 'triangle') {
+              const triangleObj = obj as fabric.Triangle
+              newObj = new fabric.Triangle({
+                left: triangleObj.left,
+                top: triangleObj.top,
+                width: triangleObj.width,
+                height: triangleObj.height,
+                fill: triangleObj.fill,
+                stroke: triangleObj.stroke,
+                strokeWidth: triangleObj.strokeWidth,
+                angle: triangleObj.angle,
+                scaleX: triangleObj.scaleX,
+                scaleY: triangleObj.scaleY,
+                opacity: triangleObj.opacity
+              })
+            } else if (obj.type === 'ellipse') {
+              const ellipseObj = obj as fabric.Ellipse
+              newObj = new fabric.Ellipse({
+                left: ellipseObj.left,
+                top: ellipseObj.top,
+                rx: ellipseObj.rx,
+                ry: ellipseObj.ry,
+                fill: ellipseObj.fill,
+                stroke: ellipseObj.stroke,
+                strokeWidth: ellipseObj.strokeWidth,
+                angle: ellipseObj.angle,
+                scaleX: ellipseObj.scaleX,
+                scaleY: ellipseObj.scaleY,
+                opacity: ellipseObj.opacity
+              })
+            } else if (obj.type === 'image') {
+              // For images, try to recreate them if possible
+              const imageObj = obj as fabric.Image
+              try {
+                // Try to get the image source and recreate it
+                const imgElement = imageObj.getElement()
+                if (imgElement && imgElement.src) {
+                  // Create a new image object with the same source
+                  fabric.Image.fromURL(imgElement.src, (img) => {
+                    if (img) {
+                      img.set({
+                        left: imageObj.left,
+                        top: imageObj.top,
+                        angle: imageObj.angle,
+                        scaleX: imageObj.scaleX,
+                        scaleY: imageObj.scaleY,
+                        opacity: imageObj.opacity,
+                        width: imageObj.width,
+                        height: imageObj.height
+                      })
+                      cleanCanvas.add(img)
+                      cleanCanvas.renderAll()
+                    }
+                  })
+                } else {
+                  // Fallback to rectangle placeholder
+                  newObj = new fabric.Rect({
+                    left: imageObj.left,
+                    top: imageObj.top,
+                    width: imageObj.width || 100,
+                    height: imageObj.height || 100,
+                    fill: '#f0f0f0',
+                    stroke: '#ccc',
+                    strokeWidth: 1,
+                    angle: imageObj.angle,
+                    scaleX: imageObj.scaleX,
+                    scaleY: imageObj.scaleY,
+                    opacity: imageObj.opacity
+                  })
+                }
+              } catch (imageError) {
+                console.warn('Failed to recreate image, using placeholder:', imageError)
+                // Fallback to rectangle placeholder
                 newObj = new fabric.Rect({
-                  left: rectObj.left,
-                  top: rectObj.top,
-                  width: rectObj.width,
-                  height: rectObj.height,
-                  fill: rectObj.fill,
-                  stroke: rectObj.stroke,
-                  strokeWidth: rectObj.strokeWidth,
-                  angle: rectObj.angle,
-                  scaleX: rectObj.scaleX,
-                  scaleY: rectObj.scaleY
-                })
-              } else if (obj.type === 'circle') {
-                const circleObj = obj as fabric.Circle
-                newObj = new fabric.Circle({
-                  left: circleObj.left,
-                  top: circleObj.top,
-                  radius: circleObj.radius,
-                  fill: circleObj.fill,
-                  stroke: circleObj.stroke,
-                  strokeWidth: circleObj.strokeWidth,
-                  angle: circleObj.angle,
-                  scaleX: circleObj.scaleX,
-                  scaleY: circleObj.scaleY
-                })
-              } else if (obj.type === 'triangle') {
-                const triangleObj = obj as fabric.Triangle
-                newObj = new fabric.Triangle({
-                  left: triangleObj.left,
-                  top: triangleObj.top,
-                  width: triangleObj.width,
-                  height: triangleObj.height,
-                  fill: triangleObj.fill,
-                  stroke: triangleObj.stroke,
-                  strokeWidth: triangleObj.strokeWidth,
-                  angle: triangleObj.angle,
-                  scaleX: triangleObj.scaleX,
-                  scaleY: triangleObj.scaleY
-                })
-              } else if (obj.type === 'ellipse') {
-                const ellipseObj = obj as fabric.Ellipse
-                newObj = new fabric.Ellipse({
-                  left: ellipseObj.left,
-                  top: ellipseObj.top,
-                  rx: ellipseObj.rx,
-                  ry: ellipseObj.ry,
-                  fill: ellipseObj.fill,
-                  stroke: ellipseObj.stroke,
-                  strokeWidth: ellipseObj.strokeWidth,
-                  angle: ellipseObj.angle,
-                  scaleX: ellipseObj.scaleX,
-                  scaleY: ellipseObj.scaleY
+                  left: imageObj.left,
+                  top: imageObj.top,
+                  width: imageObj.width || 100,
+                  height: imageObj.height || 100,
+                  fill: '#f0f0f0',
+                  stroke: '#ccc',
+                  strokeWidth: 1,
+                  angle: imageObj.angle,
+                  scaleX: imageObj.scaleX,
+                  scaleY: imageObj.scaleY,
+                  opacity: imageObj.opacity
                 })
               }
-              
-              if (newObj) {
-                cleanCanvas.add(newObj)
+            } else if (obj.type === 'polygon') {
+              const polygonObj = obj as fabric.Polygon
+              newObj = new fabric.Polygon(polygonObj.points || [], {
+                left: polygonObj.left,
+                top: polygonObj.top,
+                fill: polygonObj.fill,
+                stroke: polygonObj.stroke,
+                strokeWidth: polygonObj.strokeWidth,
+                angle: polygonObj.angle,
+                scaleX: polygonObj.scaleX,
+                scaleY: polygonObj.scaleY,
+                opacity: polygonObj.opacity
+              })
+            } else if (obj.type === 'line') {
+              const lineObj = obj as fabric.Line
+              newObj = new fabric.Line(lineObj.points || [0, 0, 100, 100], {
+                left: lineObj.left,
+                top: lineObj.top,
+                stroke: lineObj.stroke,
+                strokeWidth: lineObj.strokeWidth,
+                angle: lineObj.angle,
+                scaleX: lineObj.scaleX,
+                scaleY: lineObj.scaleY,
+                opacity: lineObj.opacity
+              })
+            } else if (obj.type === 'path') {
+              const pathObj = obj as fabric.Path
+              newObj = new fabric.Path(pathObj.path || '', {
+                left: pathObj.left,
+                top: pathObj.top,
+                fill: pathObj.fill,
+                stroke: pathObj.stroke,
+                strokeWidth: pathObj.strokeWidth,
+                angle: pathObj.angle,
+                scaleX: pathObj.scaleX,
+                scaleY: pathObj.scaleY,
+                opacity: pathObj.opacity
+              })
+            } else {
+              // For any other object types, try to serialize and deserialize
+              try {
+                const objJSON = obj.toObject()
+                fabric.util.enlivenObjects([objJSON], (objects) => {
+                  if (objects && objects.length > 0) {
+                    const recreatedObj = objects[0]
+                    recreatedObj.set({
+                      left: obj.left,
+                      top: obj.top,
+                      angle: obj.angle,
+                      scaleX: obj.scaleX,
+                      scaleY: obj.scaleY,
+                      opacity: obj.opacity
+                    })
+                    cleanCanvas.add(recreatedObj)
+                    cleanCanvas.renderAll()
+                  }
+                })
+              } catch (serializeError) {
+                console.warn('Failed to serialize/deserialize object:', serializeError)
               }
-            } catch (createError) {
-              console.warn('Failed to recreate object:', createError)
-              // Skip this object if creation fails
             }
+            
+            if (newObj) {
+              cleanCanvas.add(newObj)
+            }
+          } catch (createError) {
+            console.warn('Failed to recreate object:', createError)
+            // Skip this object if creation fails
           }
         })
         

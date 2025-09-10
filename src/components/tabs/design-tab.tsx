@@ -3,8 +3,9 @@ import { ScrollArea } from "../ui/scroll-area"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
 import { Search, X, Monitor, Smartphone, Image, FileText, CreditCard, Instagram, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { StageSize } from '../../lib/types'
+import { useTabState } from '../../hooks/useTabState'
 
 interface DesignTabProps {
   onClosePanel: () => void
@@ -13,9 +14,18 @@ interface DesignTabProps {
 }
 
 export function DesignTab({ onClosePanel, onCanvasSizeChange, currentCanvasSize={width:0, height: 0} }: DesignTabProps) {
-  const [customWidth, setCustomWidth] = useState((currentCanvasSize.width).toString())
-  const [customHeight, setCustomHeight] = useState((currentCanvasSize.height).toString())
-  const [selectedSize, setSelectedSize] = useState<string>('')
+  const { tabStates, updateTabState } = useTabState();
+  const { customWidth, customHeight, selectedSize } = tabStates.design;
+
+  // Update custom dimensions when canvas size changes
+  useEffect(() => {
+    if (currentCanvasSize.width > 0 && currentCanvasSize.height > 0) {
+      updateTabState('design', {
+        customWidth: currentCanvasSize.width.toString(),
+        customHeight: currentCanvasSize.height.toString()
+      });
+    }
+  }, [currentCanvasSize.width, currentCanvasSize.height, updateTabState]);
 
   // Predefined canvas sizes commonly used in design applications
   const predefinedSizes: StageSize[] = [
@@ -49,7 +59,7 @@ export function DesignTab({ onClosePanel, onCanvasSizeChange, currentCanvasSize=
   ]
 
   const handleSizeSelect = (sizeName: string) => {
-    setSelectedSize(sizeName)
+    updateTabState('design', { selectedSize: sizeName });
     const size = predefinedSizes.find(s => s.name === sizeName)
     if (size && onCanvasSizeChange) {
       onCanvasSizeChange({ width: size.width, height: size.height })
@@ -132,7 +142,7 @@ export function DesignTab({ onClosePanel, onCanvasSizeChange, currentCanvasSize=
                     id="custom-width"
                     type="number"
                     value={customWidth}
-                    onChange={(e) => setCustomWidth(e.target.value)}
+                    onChange={(e) => updateTabState('design', { customWidth: e.target.value })}
                     className="h-8 text-sm"
                     placeholder="800"
                   />
@@ -143,7 +153,7 @@ export function DesignTab({ onClosePanel, onCanvasSizeChange, currentCanvasSize=
                     id="custom-height"
                     type="number"
                     value={customHeight}
-                    onChange={(e) => setCustomHeight(e.target.value)}
+                    onChange={(e) => updateTabState('design', { customHeight: e.target.value })}
                     className="h-8 text-sm"
                     placeholder="600"
                   />

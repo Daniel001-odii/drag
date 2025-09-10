@@ -5,6 +5,7 @@ import { Search, X, Upload, Image, File, Trash2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import * as fabric from 'fabric'
 import { addImageToCanvas } from '../../lib/fabric-object-utils'
+import { useTabState } from '../../hooks/useTabState'
 
 interface UploadsTabProps {
   onClosePanel: () => void
@@ -22,6 +23,7 @@ interface UploadItem {
 }
 
 export function UploadsTab({ onClosePanel, canvasRef }: UploadsTabProps) {
+  const { tabStates, updateTabState } = useTabState();
   const [uploads, setUploads] = useState<UploadItem[]>([
  /*    {
       id: '1',
@@ -50,7 +52,7 @@ export function UploadsTab({ onClosePanel, canvasRef }: UploadsTabProps) {
       date: '3 days ago'
     } */
   ])
-  const [searchQuery, setSearchQuery] = useState('')
+  const { searchValue: searchQuery, selectedFiles } = tabStates.uploads;
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -187,7 +189,7 @@ export function UploadsTab({ onClosePanel, canvasRef }: UploadsTabProps) {
           <Input
             placeholder="Search uploads..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => updateTabState('uploads', { searchValue: e.target.value })}
             className="w-full pl-10"
           />
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import * as fabric from 'fabric'
 import { loadFont } from '../lib/font-utils'
 import { FontSelector } from './ui/font-selector'
@@ -18,7 +18,6 @@ import {
   FlipVertical,
   Minus,
   Plus,
-  Share2,
   Settings,
   RotateCcw,
   Ellipsis,
@@ -28,7 +27,7 @@ import {
   X,
   Type
 } from 'lucide-react'
-import { downloadCanvasAsPNG, downloadCanvasAsJSON, importCanvasFromJSON } from '../lib/fabric-canvas-utils'
+import { downloadCanvasAsPNG } from '../lib/fabric-canvas-utils'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from './ui/dropdown-menu'
@@ -57,7 +56,6 @@ export function AppHeader({
   canvasRef
 }: AppHeaderProps) {
   const [fontSize, setFontSize] = useState(16)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [fontFamily, setFontFamily] = useState('Arial')
   const [textColor, setTextColor] = useState('#000000')
   const [fillColor, setFillColor] = useState('#ffffff')
@@ -396,69 +394,6 @@ export function AppHeader({
     }
   }
 
-  // Handle JSON export
-  const handleJSONExport = async (type: 'full' | 'minimal' = 'full') => {
-    if (!canvasRef) {
-      toast.error('Canvas not available for export')
-      return
-    }
-
-    try {
-      // Show loading toast
-      const loadingToast = toast.loading(`Exporting JSON (${type} export)...`)
-      
-      // Generate filename with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      const filename = `drag-design-${timestamp}.json`
-      
-      await downloadCanvasAsJSON(canvasRef, filename, {
-        includeBackground: type === 'full',
-        includeBackgroundImage: type === 'full',
-        includeCustomProperties: type === 'full'
-      })
-      
-      // Dismiss loading toast and show success
-      toast.dismiss(loadingToast)
-      toast.success(`JSON exported successfully! (${type} export)`)
-    } catch (error) {
-      console.error('Error exporting JSON:', error)
-      toast.error('Failed to export JSON')
-    }
-  }
-
-  // Handle JSON import
-  const handleJSONImport = () => {
-    fileInputRef.current?.click()
-  }
-
-  // Handle file input change
-  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file || !canvasRef) {
-      return
-    }
-
-    try {
-      // Show loading toast
-      const loadingToast = toast.loading('Importing project...')
-      
-      const text = await file.text()
-      await importCanvasFromJSON(canvasRef, text, {
-        clearCanvas: true
-      })
-      
-      // Dismiss loading toast and show success
-      toast.dismiss(loadingToast)
-      toast.success('Project imported successfully!')
-      
-      // Reset file input
-      event.target.value = ''
-    } catch (error) {
-      console.error('Error importing JSON:', error)
-      toast.error('Failed to import project file')
-      event.target.value = ''
-    }
-  }
 
 
 
@@ -1134,59 +1069,19 @@ export function AppHeader({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Export As</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handlePNGExport('high')}>
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                PNG (High Quality)
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handlePNGExport('standard')}>
                 <DownloadIcon className="w-4 h-4 mr-2" />
-                PNG (Standard)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleJPEGExport('high')}>
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                JPEG (High Quality)
+                PNG Standard
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleJPEGExport('standard')}>
                 <DownloadIcon className="w-4 h-4 mr-2" />
-                JPEG (Standard)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleJSONExport('full')}>
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                JSON (Full Project)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleJSONExport('minimal')}>
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                JSON (Minimal)
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleJSONImport}>
-                <UploadIcon className="w-4 h-4 mr-2" />
-                Import Project
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                PDF
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Share2 className="w-4 h-4 mr-2" />
-                Share Link
+                JPG Standard
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
       
 
-          {/* Hidden file input for JSON import */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            onChange={handleFileInputChange}
-            style={{ display: 'none' }}
-          />
         </div>
       </div>
     </TooltipProvider>

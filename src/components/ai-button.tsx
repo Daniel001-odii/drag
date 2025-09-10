@@ -63,6 +63,7 @@ export const AiButton = ({
                 })
                 toast.success('Design generated successfully!')
                 setPrompt('')
+                setModalOpen(false)
             } else {
                 throw new Error('Invalid response format')
             }
@@ -74,11 +75,13 @@ export const AiButton = ({
         }
     }
 
+    const [modalopen, setModalOpen] = useState(false);
+
     return (
 
         <div>
 
-            <Dialog>
+            <Dialog open={modalopen} onOpenChange={setModalOpen}>
                 <DialogTrigger asChild>
                     <Button disabled={!canvasRef} className="rounded-full size-[60px] bg-gradient-to-br from-blue-500  to-blue-700 text-white flex justify-center items-center">
                         <FlaskConical className=" size-6" />
