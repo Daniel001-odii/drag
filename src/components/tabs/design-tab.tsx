@@ -3,7 +3,7 @@ import { ScrollArea } from "../ui/scroll-area"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
 import { Search, X, Monitor, Smartphone, Image, FileText, CreditCard, Instagram, Facebook, Twitter, Linkedin, Youtube } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import type { StageSize } from '../../lib/types'
 import { useTabState } from '../../hooks/useTabState'
 

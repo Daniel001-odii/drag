@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Clock, RotateCcw, Eye, Check } from "lucide-react";
-import * as fabric from 'fabric';
+
 
 interface DesignHistoryItem {
   id: string;

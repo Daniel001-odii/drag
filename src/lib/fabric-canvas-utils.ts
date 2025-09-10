@@ -297,9 +297,11 @@ export const exportCanvasAsPNG = async (
               try {
                 // Try to get the image source and recreate it
                 const imgElement = imageObj.getElement()
-                if (imgElement && imgElement.src) {
+                if (imgElement && 'src' in imgElement && imgElement.src) {
                   // Create a new image object with the same source
-                  fabric.Image.fromURL(imgElement.src, (img) => {
+                  fabric.Image.fromURL(imgElement.src, {
+                    crossOrigin: 'anonymous'
+                  }).then((img: fabric.Image) => {
                     if (img) {
                       img.set({
                         left: imageObj.left,
@@ -314,6 +316,8 @@ export const exportCanvasAsPNG = async (
                       cleanCanvas.add(img)
                       cleanCanvas.renderAll()
                     }
+                  }).catch((error) => {
+                    console.warn('Failed to load image from URL:', error)
                   })
                 } else {
                   // Fallback to rectangle placeholder
@@ -363,7 +367,9 @@ export const exportCanvasAsPNG = async (
               })
             } else if (obj.type === 'line') {
               const lineObj = obj as fabric.Line
-              newObj = new fabric.Line(lineObj.points || [0, 0, 100, 100], {
+              // Get points from the line object's path or use default
+              const points = (lineObj as any).points || [0, 0, 100, 100]
+              newObj = new fabric.Line(points, {
                 left: lineObj.left,
                 top: lineObj.top,
                 stroke: lineObj.stroke,
@@ -390,20 +396,25 @@ export const exportCanvasAsPNG = async (
               // For any other object types, try to serialize and deserialize
               try {
                 const objJSON = obj.toObject()
-                fabric.util.enlivenObjects([objJSON], (objects) => {
+                fabric.util.enlivenObjects([objJSON]).then((objects) => {
                   if (objects && objects.length > 0) {
                     const recreatedObj = objects[0]
-                    recreatedObj.set({
-                      left: obj.left,
-                      top: obj.top,
-                      angle: obj.angle,
-                      scaleX: obj.scaleX,
-                      scaleY: obj.scaleY,
-                      opacity: obj.opacity
-                    })
-                    cleanCanvas.add(recreatedObj)
-                    cleanCanvas.renderAll()
+                    // Type guard to ensure it's a FabricObject
+                    if (recreatedObj && 'set' in recreatedObj && 'left' in recreatedObj) {
+                      (recreatedObj as any).set({
+                        left: obj.left,
+                        top: obj.top,
+                        angle: obj.angle,
+                        scaleX: obj.scaleX,
+                        scaleY: obj.scaleY,
+                        opacity: obj.opacity
+                      })
+                      cleanCanvas.add(recreatedObj as any)
+                      cleanCanvas.renderAll()
+                    }
                   }
+                }).catch((serializeError) => {
+                  console.warn('Failed to serialize/deserialize object:', serializeError)
                 })
               } catch (serializeError) {
                 console.warn('Failed to serialize/deserialize object:', serializeError)

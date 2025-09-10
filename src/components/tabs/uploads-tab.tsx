@@ -52,7 +52,7 @@ export function UploadsTab({ onClosePanel, canvasRef }: UploadsTabProps) {
       date: '3 days ago'
     } */
   ])
-  const { searchValue: searchQuery, selectedFiles } = tabStates.uploads;
+  const { searchValue: searchQuery } = tabStates.uploads;
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 

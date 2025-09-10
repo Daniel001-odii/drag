@@ -14,7 +14,7 @@ interface ToolsTabProps {
 
 export function ToolsTab({ onClosePanel, canvasRef, onCanvasSizeChange }: ToolsTabProps) {
   const { tabStates, updateTabState } = useTabState();
-  const { searchValue, selectedTool } = tabStates.tools;
+  const { searchValue } = tabStates.tools;
   // Handle JSON export
   const handleExportJSON = async () => {
     if (!canvasRef) {

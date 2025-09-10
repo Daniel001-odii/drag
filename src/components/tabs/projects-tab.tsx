@@ -9,7 +9,7 @@ interface ProjectsTabProps {
 
 export function ProjectsTab({ onClosePanel }: ProjectsTabProps) {
   const { tabStates, updateTabState } = useTabState();
-  const { searchValue, selectedProject } = tabStates.projects;
+  const { searchValue } = tabStates.projects;
   const projects = [
     { name: "Social Media Campaign", preview: "/placeholder.svg?height=120&width=120", modified: "2 hours ago" },
     { name: "Business Presentation", preview: "/placeholder.svg?height=120&width=120", modified: "1 day ago" },
