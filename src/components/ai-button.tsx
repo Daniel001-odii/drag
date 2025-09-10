@@ -1,4 +1,4 @@
-import { FlaskConical, SendHorizonal } from "lucide-react"
+import { SendHorizonal } from "lucide-react"
 import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog'
 import { useState } from "react"
@@ -83,9 +83,10 @@ export const AiButton = ({
 
             <Dialog open={modalopen} onOpenChange={setModalOpen}>
                 <DialogTrigger asChild>
-                    <Button disabled={!canvasRef} className="rounded-full size-[60px] bg-gradient-to-br from-blue-500  to-blue-700 text-white flex justify-center items-center">
+                   {/*  <Button disabled={!canvasRef} className="rounded-full size-[60px] bg-gradient-to-br from-blue-500  to-blue-700 text-white flex justify-center items-center">
                         <FlaskConical className=" size-6" />
-                    </Button>
+                    </Button> */}
+                    <></>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader className=" !text-center">
